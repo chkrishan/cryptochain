@@ -46,6 +46,7 @@ class Blockchain {
 
             const validatedHash = cryptoHash(timeStamp, lasthash, data, nonce, difficulty);
             if (validatedHash !== hash) return false;
+            //with this check noone can temper with difficulty
             if (Math.abs(lastDifficulty - difficulty) > 1) return false;
         }
 

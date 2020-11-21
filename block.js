@@ -30,13 +30,13 @@ class Block {
 
         do {
             nonce++;
-            timeStamp = Date.now();
+            timeStamp = Date(Date.now());
             difficulty = Block.adjustDifficulty({ originalBlock: lastBlock, timeStamp });
             hash = cryptoHash(timeStamp, lasthash, nonce, difficulty, data)
 
         } while (hexToBinary(hash).substring(0, difficulty) !== '0'.repeat(difficulty));
 
-//here we are checking  
+        //here we are checking  
 
         return new this({
             timeStamp,
