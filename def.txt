@@ -1,0 +1,16 @@
+** Transaction Pool :- it is a data structure which collect the transactions which is created by wallet
+throughout the network .
+-> the inner implemenatation can be anything you like , like arrays and map with key value structure 
+
+it could be anything as long as it supports three main behaviour
+1. it collects unique set of transaction objects
+2. it could update already stored transactions when a change has been submitted by a wallet
+3. it can rewrite multiple transactions in the inner collection
+
+***************-----------------------********************
+
+### every node in the network is gonna have their own instance of transaction pool
+but the key is making sure that all the transaction pool are synchronised
+when one node creates a new transaction and updates a existing one then 
+that transaction have to be broadcast on the network 
+based on the transaction id it will be add to every transaction pool if its new 

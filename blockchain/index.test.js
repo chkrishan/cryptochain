@@ -12,7 +12,7 @@ describe('Blockchain', () => {
         originalChain = blockchain;
     })
 
-    it('contains a `chian` Array instance', () => {
+    it('contains a `chain` Array instance', () => {
         expect(blockchain.chain instanceof Array).toBe(true);
     });
 
@@ -93,7 +93,7 @@ describe('Blockchain', () => {
 
     describe('repalceChain()', () => {
 
-        describe('when the vhain is not longer', () => {
+        describe('when the chain is not longer', () => {
             it('does not replace the chain', () => {
                 newChain.chain[0] = { new: 'chain' };
                 blockchain.replaceChain(newChain.chain);
