@@ -31,7 +31,11 @@ class PubSub {
 
         switch (channel) {
             case CHANNELS.BLOCKCHAIN:
-                this.blockchain.replaceChain(parsedMessage);
+                this.blockchain.replaceChain(parsedMessage, true, () => {
+                    //this callback is taking care that all the transactions, which are already included in blockchain,
+                    // will remove from every peer's transaction pool
+                    this.transactionPool.clearBlockchainTransactions({ chain: parsedMessage })
+                });
                 break;
 
             case CHANNELS.TRANSACTION:

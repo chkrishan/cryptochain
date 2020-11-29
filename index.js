@@ -4,6 +4,7 @@ const PubSub = require('./app/pubsub');
 const request = require('request');
 const TransactionPool = require('./wallet/transaction-pool');
 const Wallet = require('./wallet/index');
+const TransactionMiner = require('./app/transaction-miner');
 
 const app = express();
 
@@ -16,6 +17,13 @@ const wallet = new Wallet();
 const pubsub = new PubSub({ blockchain, transactionPool });
 const DEFAULT_PORT = 3000;
 const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`;
+const transactionMiner = new TransactionMiner({
+    blockchain,
+    transactionPool,
+    wallet,
+    pubsub
+});
+
 
 setTimeout(() => pubsub.broadcastChain(), 1000);
 
@@ -36,7 +44,16 @@ app.post('/api/mine', (req, res) => {
     res.redirect('/api/blocks');
 });
 
-
+app.get('/api/wallet-info', (req, res) => {
+    const address = wallet.publicKey;
+    res.json({
+        address,
+        balance: Wallet.calculateBalance({
+            chain: blockchain.chain,
+            address
+        })
+    })
+})
 
 app.post('/api/transact', (req, res) => {
     const { recipient, amount } = req.body;
@@ -49,7 +66,11 @@ app.post('/api/transact', (req, res) => {
         if (transaction) {
             transaction.update({ senderWallet: wallet, recipient, amount });
         } else {
-            transaction = wallet.createTransaction({ recipient, amount });
+            transaction = wallet.createTransaction({
+                recipient,
+                amount,
+                chain: blockchain.chain
+            });
 
         }
 
@@ -72,6 +93,13 @@ app.get('/api/transaction-pool-map', (req, res) => {
     res.json(transactionPool.transactionMap);
 })
 
+
+
+app.get('/api/mine-transactions', (req, res) => {
+    transactionMiner.mineTransactions();
+
+    res.redirect('/api/blocks');
+})
 
 
 // syncChain() method will allow new peers to get the longest chain at 

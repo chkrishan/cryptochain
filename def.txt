@@ -14,3 +14,28 @@ but the key is making sure that all the transaction pool are synchronised
 when one node creates a new transaction and updates a existing one then 
 that transaction have to be broadcast on the network 
 based on the transaction id it will be add to every transaction pool if its new 
+
+
+##########################################################################################
+
+** TRANSACTION MINOR ** :- the job of the miner is to mine new blocks(or add new blocks to blockchain) whose data consist set of transaction .
+
+-> transaction miner gets the transaction from the transaction pool
+
+-> they are the indivisuals who pays the cost of computational power and do the work 
+to find the valid hash of new block
+
+-> by mining a new block of adding the new block to the blockchain miners get the block reward(mining reward)
+
+$$$$ functionality achieve in order to properly mine a block $$$$$
+
+1. grab all the valid transaction in the pool
+2. generate a miner's reward
+3. do the cpu work to find the valid hash
+4. broasdcast and update the blockchain
+5. clear the transaction pool (of its own node not all the pools)
+
+## in order to make sure all the pools are cleared when a new transaction is mine 
+each blockchain instance is going to be resposible of clearing its transaction pool for any new transaction 
+that gets included in the overall blockchain. this is all in the effort to 
+prevent the submission of transactions that have already been included in the chain
