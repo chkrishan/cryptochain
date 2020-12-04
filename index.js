@@ -2,6 +2,7 @@ const express = require('express');
 const Blockchain = require('./blockchain');
 const PubSub = require('./app/pubsub');
 const request = require('request');
+const path = require('path');
 const TransactionPool = require('./wallet/transaction-pool');
 const Wallet = require('./wallet/index');
 const TransactionMiner = require('./app/transaction-miner');
@@ -10,6 +11,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'client/dist')));
 
 const blockchain = new Blockchain();
 const transactionPool = new TransactionPool();
@@ -102,8 +104,12 @@ app.get('/api/mine-transactions', (req, res) => {
 })
 
 
-// syncChain() method will allow new peers to get the longest chain at 
-// that moment 
+
+app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+    })
+    // syncChain() method will allow new peers to get the longest chain at 
+    // that moment 
 
 const syncWithRootState = () => {
 
@@ -123,6 +129,54 @@ const syncWithRootState = () => {
         }
     });
 }
+
+const wallet1 = new Wallet();
+const wallet2 = new Wallet();
+
+const generateWalletTransaction = ({ wallet, recipient, amount }) => {
+    const transaction = wallet.createTransaction({
+        recipient,
+        amount,
+        chain: blockchain.chain
+    });
+
+    transactionPool.setTransaction(transaction);
+};
+
+const walletAction = () => generateWalletTransaction({
+    wallet,
+    recipient: wallet1.publicKey,
+    amount: 5
+});
+
+const wallet1Action = () => generateWalletTransaction({
+    wallet: wallet1,
+    recipient: wallet2.publicKey,
+    amount: 10
+});
+
+const wallet2Action = () => generateWalletTransaction({
+    wallet: wallet2,
+    recipient: wallet.publicKey,
+    amount: 15
+});
+
+for (let i = 0; i < 10; i++) {
+    if (i % 3 === 0) {
+        walletAction();
+        wallet1Action();
+    } else if (i % 3 === 1) {
+        walletAction();
+        wallet2Action();
+    } else {
+        wallet1Action();
+        wallet2Action();
+    }
+
+    transactionMiner.mineTransactions();
+
+}
+
 
 let PEER_PORT;
 //to generate the random port no. for new peers 
